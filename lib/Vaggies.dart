@@ -1,8 +1,7 @@
 import './newpage.dart';
 import 'package:flutter/material.dart';
-
 import './store.dart';
-
+import 'cart_database.dart';
 
 
 class Vaggies extends StatefulWidget {
@@ -138,8 +137,9 @@ class _VaggiesState extends State<Vaggies> {
           Expanded(
             child: MaterialButton(
               color: Colors.red,
-              onPressed: (){
-                
+              onPressed: ()async{
+                await getpath();
+                await insertItem(widget.names, clearamount);
                 senddatatocart(
                
                   clearamount,widget.names

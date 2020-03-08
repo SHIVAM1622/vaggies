@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'cart_database.dart';
 
 class Cart extends StatefulWidget {
   final int prices;
@@ -16,18 +17,33 @@ class _CartState extends State<Cart> {
   var prices;
   String name;
   Map bill = {};
-  
-
-
+  // added by alankrit
+  List items = [];
+  bool isloading = true;
+  // added by alankrit
   @override
   void initState() {
     super.initState();
     bill = {
       name : prices
     };
-    
-
+  // added by alankrit
+    intialize();
+  // added by alankrit  
   }
+  
+  // added by alankrit 
+  void intialize() async{
+    await getpath();
+    items = await getItems();
+    isloading = false;
+    setState(() {
+      
+    });
+    print(isloading);
+  }
+  // added by alankrit 
+
     List billing = [];
   settingupcard() async {
     var _firestore = Firestore.instance;
@@ -42,8 +58,9 @@ class _CartState extends State<Cart> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.prices == null
-        ? Center(child: Text("NO  PIcked"))
+    return isloading
+        ? // earlier // Center(child: Text("NO  PIcked"))
+          /*now*/ Center(child: CircularProgressIndicator(),)
         : Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.white,
@@ -61,6 +78,8 @@ class _CartState extends State<Cart> {
              Container(
               child: Column(
                 children: <Widget>[
+                  /* earlier 
+                  >>>>>>>>>
                   Card(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -78,6 +97,51 @@ class _CartState extends State<Cart> {
                       ],
                     ),
                   ),
+                  <<<<<<<<<<<<<
+                  */
+
+
+
+                  // added by Alankrit >>>>>>>>>>>
+                  Expanded(
+                    child: 
+                  ListView.builder( itemCount: items.length, 
+                    itemBuilder: (BuildContext context, index){
+                      return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      color: Colors.white,
+                      child: ListTile(
+                        trailing: Container(
+                          width: 100,
+                          child: Row(
+                            children: <Widget>[
+                              Text('Rs. ${items[index]['price']}'),
+                              IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () async {
+                                    await deleteItem(items[index]['item_id']);
+                                    intialize();
+                                    setState(() {
+                                    
+                                    });
+                                  }),
+                            ],
+                          ),
+                        ),
+                        title: Text(items[index]['name']),
+                      ),
+                    ),
+                  );
+                    },
+                  )
+                  ,),
+                  //<<<<<<<<<<<<<<<<< added by alankrit
+                  //
+                  //  ABOVE CODE WAS ADDED BY ALANKRIT
+                  //
+                  //      
+
                   Expanded(
                     child: Container(
                       alignment: Alignment.bottomCenter,
